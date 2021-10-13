@@ -45,7 +45,7 @@ simplistiska. (Ni får alltså INTE VG om ni testar t.ex. 1==1 eller liknande, o
 
         Scanner fileReader = null;
         try {
-            fileReader = new Scanner(new File("customers.txt"));
+            fileReader = new Scanner(new File("src/gymsystem/customers.txt"));
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
             e.printStackTrace();
