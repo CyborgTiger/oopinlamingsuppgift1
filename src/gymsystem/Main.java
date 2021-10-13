@@ -34,15 +34,15 @@ simplistiska. (Ni får alltså INTE VG om ni testar t.ex. 1==1 eller liknande, o
             på input från användaren)
     o Alla testfallen ska gå gröna när de körs.*/
     public static void main(String[] args) {
-
-
+        ArrayList<Customer> customers = createCustomerList();
     }
-    public static Customer readCustomer(int i){
+
+    public static ArrayList<Customer> createCustomerList(){
         String personnummer = "";
         String namn = "";
-        String personnumerAndNamn = "";
-        String dateOfStart = "";
-
+        String personnumerAndNamn;
+        String dateOfStart;
+        ArrayList<Customer> customers = new ArrayList<>();
         Scanner fileReader = null;
         try {
             fileReader = new Scanner(new File("src/gymsystem/customers.txt"));
@@ -51,29 +51,19 @@ simplistiska. (Ni får alltså INTE VG om ni testar t.ex. 1==1 eller liknande, o
             e.printStackTrace();
         }
         if (fileReader != null) {
-            for (int j = 0; j < i; j++) {
-                fileReader.nextLine();
+            while(fileReader.hasNext()){
+                personnumerAndNamn = fileReader.nextLine();
+                dateOfStart = fileReader.nextLine();
+
+
+            for (int j = 0; j < personnumerAndNamn.length(); j++) {
+                if (personnumerAndNamn.charAt(j) == ','){
+                    personnummer = personnumerAndNamn.substring(0,j);
+                    namn = personnumerAndNamn.substring(j+2);
+                }
             }
-            personnumerAndNamn = fileReader.nextLine();
-            dateOfStart = fileReader.nextLine();
-        }
-
-        for (int j = 0; j < personnumerAndNamn.length(); j++) {
-            if (personnumerAndNamn.charAt(j) == ','){
-                personnummer = personnumerAndNamn.substring(0,j);
-                namn = personnumerAndNamn.substring(j+2);
-            }
-        }
-
-        return new Customer(personnummer, namn, dateOfStart);
-    }
-
-    public static ArrayList<Customer> createCustomerList(){
-        ArrayList<Customer> customers = new ArrayList<>();
-        //while()
-
-
-
+            customers.add(new Customer(personnummer, namn, dateOfStart));
+            }}
         return customers;
     }
 
