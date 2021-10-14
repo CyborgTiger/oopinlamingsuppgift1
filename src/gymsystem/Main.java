@@ -2,6 +2,7 @@ package gymsystem;
 
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -35,6 +36,7 @@ simplistiska. (Ni får alltså INTE VG om ni testar t.ex. 1==1 eller liknande, o
     o Alla testfallen ska gå gröna när de körs.*/
     public static void main(String[] args) {
         ArrayList<Customer> customers = createCustomerList();
+        findCurrentCustomer("7608021234", customers);
     }
 
     public static ArrayList<Customer> createCustomerList(){
@@ -62,17 +64,48 @@ simplistiska. (Ni får alltså INTE VG om ni testar t.ex. 1==1 eller liknande, o
                     namn = personnumerAndNamn.substring(j+2);
                 }
             }
-            customers.add(new Customer(personnummer, namn, dateOfStart));
+            customers.add(new Customer(personnummer, namn, LocalDate.parse(dateOfStart)));
             }}
         return customers;
     }
 
-    public static boolean findCurrentCustomer(String inputString){
-        if (Character.isDigit(inputString.charAt(0))){
-
-        } else{
-
+    public static boolean findCurrentCustomer(String inputString, ArrayList<Customer> customers){
+        inputString = inputString.trim();
+        LocalDate today = LocalDate.now();
+        boolean found = false;
+        try {
+            FileWriter logOfVisitors = new FileWriter("visitorLog.txt", true);
+            if (Character.isDigit(inputString.charAt(0))){
+                //personnummer based search
+                for (Customer customer : customers) {
+                    if (customer.getPersonnummer().equals(inputString)){
+                        LocalDate expiryDate = customer.getDateOfStart().plusYears(1);
+                        if (expiryDate.isAfter(today)){
+                            logOfVisitors.write(customer.getNamn() + " " + customer.getPersonnummer() + " " + today + "\n");
+                            found = true;
+                            logOfVisitors.close();
+                            break;
+                        }
+                        break;
+                    }
+                }
+            } else{
+                //name based search
+                for (Customer customer : customers) {
+                    if (customer.getNamn().equals(inputString)){
+                        if (today.isAfter(customer.getDateOfStart())){
+                            logOfVisitors.write(customer.getNamn() + " " + customer.getPersonnummer() + " " + today + "\n");
+                            found = true;
+                            logOfVisitors.close();
+                            break;
+                        }
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return false;
+        return found;
     }
 }
