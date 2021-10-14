@@ -7,38 +7,14 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    /*För att bli Godkänd (G) krävs att du hjälper både receptionisten och den personlige tränaren och
-    uppfyller deras önskemål. Din lösning ska kunna:
-            • Läsa personposter från fil.
-            • Skriva till fil.
-• Läsa in och parsa datum (tips: LocalDate är en bra klass för hantering av datum)
-• Ha bra felhantering (relevanta felmeddelanden, exceptionhantering och try-with-resources)
-• Koden ska vara enkelt läsbar och prydligt skriven.
-            • Minst ett enhetstest måste finnas, som är:
-    o Någorlunda relevant för programmets funktionalitet
-    o Som går grönt oberoende av datum
-    o Som alltid går att köra automatiskt (alltså inte väntar på input från användare).
-    För att bli Väl Godkänd (VG) måste lösningen uppfylla följande:
-            • Alla krav för att få G vara uppfyllda.
-            • Jobba helt testdrivet när du löser uppgiften.
-• Det ska finnas enhetstester som minst täcker följande delar av koden:
-    o Att inläsning av korrekt data görs, på korrekt sätt
-    o Att datat kontrolleras och behandlas på rätt sätt
-    o Att korrekta utskrifter görs till fil
-• Testerna ska uppfylla följande krav:
-    o Dessa tester ska alltid kunna köras med samma resultat. (De får alltså inte vara
-    beroende av att man t.ex. kör koden ett visst datum för att de ska bli gröna)
-    o Testerna ska vara relevanta för programmets funktionalitet och inte vara extremt
-simplistiska. (Ni får alltså INTE VG om ni testar t.ex. 1==1 eller liknande, och inte
-    heller om ni testar simpla getters och setters)
-    o De ska alltid gå att köra testerna automatiskt (det är alltså inte ok att testerna väntar
-            på input från användaren)
-    o Alla testfallen ska gå gröna när de körs.*/
     public static void main(String[] args) {
-        ArrayList<Customer> customers = createCustomerList();
-        findCurrentCustomer("7608021234", customers);
+        UI();
     }
 
+    /**
+     * Creates a ArrayList with all the customers
+     * @return a ArrayList that contains all customers in the customer file
+     */
     public static ArrayList<Customer> createCustomerList(){
         String personnummer = "";
         String namn = "";
@@ -69,43 +45,75 @@ simplistiska. (Ni får alltså INTE VG om ni testar t.ex. 1==1 eller liknande, o
         return customers;
     }
 
+    /**
+     * Checks if the customer input has a valid membership
+     * @param inputString what is being searched with
+     * @param customers the arrayList being searched
+     * @return boolean if a customer was found and with valid membership
+     */
     public static boolean findCurrentCustomer(String inputString, ArrayList<Customer> customers){
         inputString = inputString.trim();
         LocalDate today = LocalDate.now();
         boolean found = false;
-        try {
-            FileWriter logOfVisitors = new FileWriter("visitorLog.txt", true);
-            if (Character.isDigit(inputString.charAt(0))){
+        boolean displayError = true;
+        try (FileWriter logOfVisitors = new FileWriter("visitorLog.txt", true)) {
+            if (Character.isDigit(inputString.charAt(0))) {
                 //personnummer based search
                 for (Customer customer : customers) {
-                    if (customer.getPersonnummer().equals(inputString)){
+                    if (customer.getPersonnummer().equals(inputString)) {
                         LocalDate expiryDate = customer.getDateOfStart().plusYears(1);
-                        if (expiryDate.isAfter(today)){
-                            logOfVisitors.write(customer.getNamn() + " " + customer.getPersonnummer() + " " + today + "\n");
+                        if (expiryDate.isAfter(today)) {
+                            logOfVisitors.write(customer.getNamn() + " " + customer.getPersonnummer() + " Date: " + today + "\n");
                             found = true;
+                            displayError = false;
                             logOfVisitors.close();
+                            System.out.println("Customer found and logged through personnummer");
                             break;
                         }
+                        System.out.println("Customer expired");
+                        displayError = false;
                         break;
                     }
                 }
-            } else{
+                if (displayError) {
+                    System.out.println("Customer not found. Check if inputted correctly.");
+                }
+            } else {
                 //name based search
                 for (Customer customer : customers) {
-                    if (customer.getNamn().equals(inputString)){
-                        if (today.isAfter(customer.getDateOfStart())){
-                            logOfVisitors.write(customer.getNamn() + " " + customer.getPersonnummer() + " " + today + "\n");
+                    if (customer.getNamn().equals(inputString)) {
+                        LocalDate expiryDate = customer.getDateOfStart().plusYears(1);
+                        if (expiryDate.isAfter(today)) {
+                            logOfVisitors.write(customer.getNamn() + " " + customer.getPersonnummer() + " Date: " + today + "\n");
                             found = true;
+                            displayError = false;
                             logOfVisitors.close();
+                            System.out.println("Customer found and logged through name");
                             break;
                         }
+                        System.out.println("Customer expired");
+                        displayError = false;
                         break;
                     }
+                }
+                if (displayError) {
+                    System.out.println("Customer not found. Check if inputted correctly.");
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return found;
+    }
+
+    public static void UI(){
+        ArrayList<Customer> customers = createCustomerList();
+        Scanner input = new Scanner(System.in);
+        boolean foundCustomer = false;
+        while (!foundCustomer){
+            System.out.println("Input customer info (Full name or 10 digit personnummmer)");
+            foundCustomer = findCurrentCustomer(input.nextLine(), customers);
+        }
     }
 }

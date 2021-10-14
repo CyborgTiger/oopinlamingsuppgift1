@@ -3,17 +3,30 @@ package gymsystem;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 class MainTest extends Main{
 
     @Test
     void findCustomerTest(){
         ArrayList<Customer> customers = createCustomerList();
+        customers.add(new Customer("1111111111", "test", LocalDate.now().minusDays(1)));
         assertFalse(findCurrentCustomer("7603021234", customers));
         assertFalse(findCurrentCustomer("Alhambra Aromes", customers));
-        assertTrue(findCurrentCustomer("7608021234", customers));
+        assertTrue(findCurrentCustomer("test", customers));
+        String readFileTest = "";
+        try {
+            Scanner fileReader = new Scanner(new File("visitorLog.txt"));
+            readFileTest = fileReader.nextLine();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+            e.printStackTrace();
+        }
+        assertEquals(readFileTest, "test 1111111111 Date: " + LocalDate.now());
     }
 
     @Test
@@ -21,5 +34,4 @@ class MainTest extends Main{
         assertEquals(createCustomerList().get(0).toString(),
                 new Customer("7603021234", "Alhambra Aromes", LocalDate.parse("2020-07-01")).toString() );
     }
-
 }
