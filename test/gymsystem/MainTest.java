@@ -9,16 +9,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-class MainTest extends Main{
+class MainTest{
 
     @Test
     void findCustomerTest(){
-        ArrayList<Customer> customers = createCustomerList();
+        ArrayList<Customer> customers = Main.createCustomerList();
         customers.add(new Customer("1111111111", "test", LocalDate.now().minusDays(1)));
-        assertFalse(findCurrentCustomer("7603021234", customers));
-        assertFalse(findCurrentCustomer("Alhambra Aromes", customers));
-        assertFalse(findCurrentCustomer("non existent", customers));
-        assertTrue(findCurrentCustomer("test", customers));
+        assertFalse(Main.findCurrentCustomer("7603021234", customers));
+        assertFalse(Main.findCurrentCustomer("Alhambra Aromes", customers));
+        assertFalse(Main.findCurrentCustomer("non existent", customers));
+        assertTrue(Main.findCurrentCustomer("test", customers));
 
         String readFileTest = "";
         try {
@@ -33,7 +33,7 @@ class MainTest extends Main{
 
     @Test
     void createCustomersTest(){
-        assertEquals(createCustomerList().get(0).toString(),
+        assertEquals(Main.createCustomerList().get(0).toString(),
                 new Customer("7603021234", "Alhambra Aromes", LocalDate.parse("2020-07-01")).toString() );
     }
 
