@@ -17,7 +17,9 @@ class MainTest extends Main{
         customers.add(new Customer("1111111111", "test", LocalDate.now().minusDays(1)));
         assertFalse(findCurrentCustomer("7603021234", customers));
         assertFalse(findCurrentCustomer("Alhambra Aromes", customers));
+        assertFalse(findCurrentCustomer("non existent", customers));
         assertTrue(findCurrentCustomer("test", customers));
+
         String readFileTest = "";
         try {
             Scanner fileReader = new Scanner(new File("visitorLog.txt"));
@@ -34,4 +36,6 @@ class MainTest extends Main{
         assertEquals(createCustomerList().get(0).toString(),
                 new Customer("7603021234", "Alhambra Aromes", LocalDate.parse("2020-07-01")).toString() );
     }
+
+
 }
